@@ -1,6 +1,16 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 load("data/NNdatasets.Rda")
+```
 
+# Exercise 1
+
+```{r}
 ###################
 #Exercise 1
 #define the sigmoid function (inverse-logit)
@@ -53,7 +63,7 @@ for(iter in 1:niter){
   # define which parameter to perturb
   j<- (iter %% 5) +1
   
-  #window<-max(window*0.999,0.001) #for later reduce the window size incrementally
+  window<-max(window*0.999,0.001) # <========== REDUCE THE WINDOW SIZE INCREMENTALLY <==========
   
   Delta[j]<-rnorm(1,0,window) #generate the change in parameter and assign it
   
@@ -105,7 +115,11 @@ whl12.curr
 bhl1.curr
 wol1.curr
 bol.curr
+```
 
+# Exercise 2
+
+```{r}
 ###########################################
 #Exercise 2
 #Adding a second node to the hidden layer
@@ -129,13 +143,13 @@ NN2<-function(param,x1,x2)
   
   #  hidden layer
   z1<-whl11*x1+whl12*x2+bhl1
-  z2<-??????
+  z2<-whl21*x1+whl22*x2+bhl2
   # activation
   a11<-inv.logit(z1)
-  a12<-???
+  a12<-inv.logit(z2)
   
   #output layer
-  a2<-????
+  a2<- wol1*a11 + wol2*a12 + bol
   return(a2)
 }  
 
@@ -153,7 +167,7 @@ bol.curr<-20
 
 bestSSE<-Inf
 
-niter<-10
+niter<-5000
 window<-0.1
 for(iter in 1:niter){
   #We update parameter in turn and select the update if it gives a lower SSE   
@@ -162,7 +176,7 @@ for(iter in 1:niter){
   # define which parameter  to perturb
   j<- (iter %% 9) +1
   
-  #  window<-max(window*0.999,0.001) #for later
+  window<-max(window*0.999,0.001) # # <========== REDUCE THE WINDOW SIZE INCREMENTALLY <==========
   
   Delta[j]<-rnorm(1,0,window) #generate the change in parameter and assign it
   whl11<-whl11.curr+Delta[1]
@@ -178,7 +192,7 @@ for(iter in 1:niter){
   param<-c(whl11,whl12,whl21,whl22,bhl1,bhl2,wol1,wol2,bol)
   
   #call NN2 for each observation
-  fitted<-???
+  fitted <- NN2(param,x1,x2)
   
   
   SSE<-sum((fitted-y)^2)
@@ -223,8 +237,11 @@ bhl2.curr
 wol1.curr
 wol2.curr
 bol.curr
+```
 
+# Exercise 3
 
+```{r}
 #####
 #exercise 3  classifier NN with K=3
 
@@ -252,16 +269,17 @@ NN3<-function(param,x1,x2)
   bol3<-param[15]
   
   #  hidden layer
-  z1<-??
-  z2<-??
+  z1<-whl11*x1+whl12*x2+bhl1
+  z2<-whl21*x1+whl22*x2+bhl2
+
   # activation
-  a11<-??
-  a12<-??
+  a11<-inv.logit(z1)
+  a12<-inv.logit(z2)
   
   #output layer
-  a21<-??
-  a22<-??
-  a23<-??
+  a21 <- inv.logit(a11*wol11 + a12*wol12 + bol1)
+  a22 <- inv.logit(a11*wol21 + a12*wol22 + bol2)
+  a23 <- inv.logit(a11*wol31 + a12*wol32 + bol3)
   
   #and produce the fitted probabilities
   pimat<-t(apply(cbind(a21,a22,a23),1,prop.table)) ##calculates the proportions for each row
@@ -292,7 +310,7 @@ n<-length(xcl1)
 bestLoss<-Inf
 fitted.probs<-matrix(NA,n,3)
 
-niter<-15
+niter<-10000
 window<-0.01 #a smaller window seems to be batter
 for(iter in 1:niter){
   #We update parameter in turn and select the update if it gives a lower SSE   
@@ -383,6 +401,4 @@ sum(Loss)
 
 pred.ycltest<-apply(test.fitted.probs,1,which.max)
 table(ycltest,pred.ycltest)
-
-
-
+```
