@@ -48,7 +48,7 @@ result.bag = data.table(NULL)
 for (i in 1:B) {
   # Obtain one bagged (bootstrap) sample of the data and fit a tree
   bag.samp<-sample(train,size=length(train),replace=T)
-  oob.samp<-train[-bag.samp]
+  oob.samp=base::setdiff(train, bag.samp)
   tree.bag=rpart(medv~.,Boston,subset=bag.samp)
   
   # Store the fitted values (=predicted values) and the out of bag predictions for this “bag”. 
@@ -116,7 +116,7 @@ for (i in 1:B) {
   
   # Obtain one bagged (bootstrap) sample of the data and fit a tree
   bag.samp<-sample(train, size=length(train), replace=T)
-  oob.samp<-train[-bag.samp]
+  oob.samp=base::setdiff(train, bag.samp)
   tree.bag=rpart(medv~., data, subset=bag.samp)
   
   # Store the fitted values (=predicted values) and the out of bag predictions for this “bag”. 
@@ -144,6 +144,9 @@ pred.rf = as.data.table(pred.rf)
 rf_test_mse = mean((Boston[-train,"medv"] - pred.rf[pred.type=="test",]$avg.pred)^2)
 rf_test_mse
 
+# TODO:
+# => random forest predictions are worse than bagging. 
+# ...something seems to be wrong here...
 
 ####################################
 # Exercise 5 Random forest using R #

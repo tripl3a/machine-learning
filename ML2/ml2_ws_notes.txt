@@ -1,0 +1,4 @@
+store tree object in a list:
+big.list[[t]]
+
+you can take the mean of means, if all the vectors have same length!
